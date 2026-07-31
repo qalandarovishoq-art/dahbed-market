@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ДАХБЕД — маркетплейс рынка Мескинабады</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple:#7000FF; --purple-deep:#5A00CC; --purple-light:#F0E5FF;
+    --pink:#FF3B7F; --bg:#F3F3F5; --paper:#FFFFFF; --ink:#1A1A1F;
+    --ink-soft:#75757E; --line:#E8E8EC; --green:#1AA35C; --green-bg:#E7F8EF;
+    --amber:#B4740E; --amber-bg:#FFF3DE; --red:#D42A4A; --red-bg:#FCE7EA;
+    --shadow:0 1px 2px rgba(20,20,30,.05), 0 6px 16px -8px rgba(20,20,30,.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Manrope',sans-serif;min-height:100vh;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px 80px;}
+  .topbar{background:linear-gradient(90deg,var(--purple) 0%,#8A2BFF 100%);padding:14px 0;}
+  header{padding:0 20px;max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:8px;}
+  .brand h1{font-weight:800;font-size:24px;letter-spacing:-.02em;margin:0;color:#fff;}
+  .brand span{color:#E4C8FF;font-weight:600;font-size:13px;}
+  .cart-btn{position:relative;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:12px;padding:10px 16px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:inherit;}
+  .cart-btn:hover{background:rgba(255,255,255,.25);}
+  .cart-badge{background:var(--pink);color:#fff;border-radius:20px;min-width:20px;height:20px;font-size:11px;display:flex;align-items:center;justify-content:center;padding:0 5px;font-weight:800;}
+
+  .infobar{background:var(--purple-light);border-bottom:1px solid #E0C8FF;}
+  .infobar-inner{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--purple-deep);font-weight:600;}
+  .infobar-inner b{font-weight:800;}
+
+  .rolebar{display:flex;gap:8px;padding:20px 0 4px;overflow-x:auto;}
+  .role{padding:10px 20px;border-radius:20px;border:1.5px solid var(--line);background:var(--paper);font-family:inherit;font-weight:800;font-size:13.5px;color:var(--ink-soft);cursor:pointer;white-space:nowrap;}
+  .role.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .tabs{display:flex;gap:8px;padding:16px 0 12px;overflow-x:auto;}
+  .tab{padding:9px 18px;border-radius:20px;border:1.5px solid var(--line);background:var(--paper);font-family:inherit;font-weight:700;font-size:13px;color:var(--ink-soft);cursor:pointer;white-space:nowrap;}
+  .tab.active{background:var(--purple);color:#fff;border-color:var(--purple);}
+
+  .searchrow{display:flex;gap:10px;padding-bottom:14px;flex-wrap:wrap;}
+  .searchrow input{flex:1;min-width:200px;padding:11px 16px;border-radius:12px;border:1.5px solid var(--line);font-family:inherit;font-size:14px;background:var(--paper);}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:16px;}
+  .chip{padding:7px 14px;border-radius:20px;border:1.5px solid var(--line);background:var(--paper);font-size:12.5px;font-weight:700;color:var(--ink-soft);cursor:pointer;}
+  .chip.active{background:var(--purple);color:#fff;border-color:var(--purple);}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;}
+  .card{background:var(--paper);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;}
+  .card-img{height:130px;background:linear-gradient(135deg,var(--purple-light),#fff);display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;}
+  .stock-tag{position:absolute;top:8px;left:8px;background:var(--green-bg);color:var(--green);font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:8px;}
+  .stock-tag.low{background:var(--amber-bg);color:var(--amber);}
+  .card-body{padding:12px 12px 14px;display:flex;flex-direction:column;gap:5px;flex:1;}
+  .card-cat{font-size:11px;color:var(--ink-soft);font-weight:700;text-transform:uppercase;letter-spacing:.02em;}
+  .card-shop{font-size:11.5px;color:var(--purple-deep);font-weight:700;}
+  .card-title{font-size:14px;font-weight:700;line-height:1.3;min-height:36px;}
+  .card-price{font-size:17px;font-weight:800;color:var(--ink);}
+  .card-price span{font-size:12px;color:var(--ink-soft);font-weight:600;}
+  .addbtn{margin-top:auto;background:var(--purple);color:#fff;border:none;border-radius:10px;padding:9px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;}
+  .addbtn:hover{background:var(--purple-deep);}
+  .addbtn:disabled{background:var(--line);color:var(--ink-soft);cursor:not-allowed;}
+  .qtyrow{display:flex;align-items:center;justify-content:space-between;background:var(--purple-light);border-radius:10px;padding:4px;}
+  .qtyrow button{width:28px;height:28px;border-radius:8px;border:none;background:#fff;font-weight:800;font-size:15px;cursor:pointer;color:var(--purple);}
+  .qtyrow b{font-size:14px;}
+
+  .empty{text-align:center;padding:60px 20px;color:var(--ink-soft);}
+  .empty div:first-child{font-size:40px;margin-bottom:10px;}
+
+  .panel{background:var(--paper);border-radius:16px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
+  .panel h3{margin:0 0 14px;font-size:16px;font-weight:800;}
+  .formrow{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+  .formrow label{font-size:12.5px;font-weight:700;color:var(--ink-soft);}
+  .formrow input,.formrow select,.formrow textarea{padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);font-family:inherit;font-size:14px;background:#fff;}
+  .formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;}
+  .btn{background:var(--purple);color:#fff;border:none;border-radius:10px;padding:11px 18px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;}
+  .btn:hover{background:var(--purple-deep);}
+  .btn.secondary{background:var(--ink);}
+  .btn.ghost{background:transparent;color:var(--purple);border:1.5px solid var(--purple);}
+  .btn.small{padding:7px 12px;font-size:12.5px;border-radius:8px;}
+  .switchline{font-size:13px;color:var(--ink-soft);margin-top:10px;text-align:center;}
+  .switchline a{color:var(--purple);font-weight:700;cursor:pointer;text-decoration:none;}
+
+  .prow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);}
+  .prow:last-child{border-bottom:none;}
+  .prow-ic{font-size:26px;width:44px;height:44px;background:var(--purple-light);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .prow-info{flex:1;min-width:0;}
+  .prow-title{font-weight:700;font-size:14px;}
+  .prow-sub{font-size:12px;color:var(--ink-soft);}
+  .prow-stat{text-align:right;font-size:12.5px;color:var(--ink-soft);}
+  .prow-stat b{display:block;font-size:15px;color:var(--ink);}
+
+  .badge{display:inline-block;padding:3px 10px;border-radius:8px;font-size:11px;font-weight:800;}
+  .badge.new{background:var(--amber-bg);color:var(--amber);}
+  .badge.issued{background:var(--green-bg);color:var(--green);}
+
+  .ocard{background:var(--paper);border-radius:14px;padding:16px;box-shadow:var(--shadow);margin-bottom:12px;}
+  .ocard-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;}
+  .ocard-id{font-weight:800;font-size:14px;}
+  .ocard-meta{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .oitem{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--ink);}
+  .oitem span:last-child{color:var(--ink-soft);}
+  .ototal{display:flex;justify-content:space-between;font-weight:800;font-size:14.5px;padding-top:8px;margin-top:6px;border-top:1px dashed var(--line);}
+
+  .float-cart{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:14px 24px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:flex;align-items:center;gap:16px;cursor:pointer;font-weight:700;font-size:14px;z-index:40;}
+  .float-cart b{color:#fff;}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(20,20,30,.5);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
+  .modal{background:#fff;border-radius:18px;max-width:460px;width:100%;max-height:88vh;overflow-y:auto;padding:22px;}
+  .modal h2{margin:0 0 16px;font-size:18px;font-weight:800;}
+  .modal-close{float:right;background:var(--bg);border:none;border-radius:8px;width:30px;height:30px;font-size:16px;cursor:pointer;color:var(--ink-soft);}
+  .cartrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
+  .cartrow .ic{font-size:22px;width:36px;text-align:center;}
+  .cartrow .info{flex:1;}
+  .cartrow .info .n{font-weight:700;font-size:13.5px;}
+  .cartrow .info .p{font-size:12px;color:var(--ink-soft);}
+  .totalrow{display:flex;justify-content:space-between;padding-top:14px;font-weight:800;font-size:16px;}
+  .radiorow{display:flex;flex-direction:column;gap:8px;}
+  .radiobox{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:13.5px;font-weight:600;}
+  .radiobox.disabled{color:var(--ink-soft);}
+  .success-steps{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+  .success-step{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;}
+  .success-step .n{background:var(--purple);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+  .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:10px;font-size:13.5px;font-weight:700;z-index:200;}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <header>
+    <div class="brand">
+      <h1>ДАХБЕД</h1>
+      <span>рынок Мескинабады → доставка на пункт выдачи</span>
+    </div>
+    <button class="cart-btn" id="cartBtn" onclick="openCart()" style="display:none;">
+      🛒 Корзина <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+  </header>
+</div>
+
+<div class="infobar">
+  <div class="infobar-inner">
+    <div>📍 Пункт выдачи: <b>Мескинабады</b></div>
+    <div>⏰ Приём заказов до: <b>14:00</b></div>
+    <div>🚚 Доставка: <b>18:00–20:00</b></div>
+    <div>💵 Оплата: <b>наличными при получении</b></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="rolebar">
+    <button class="role active" id="role-buyer" onclick="setRole('buyer')">🛍️ Я покупатель</button>
+    <button class="role" id="role-seller" onclick="setRole('seller')">🧺 Я продавец</button>
+    <button class="role" id="role-operator" onclick="setRole('operator')">🚚 Панель оператора</button>
+  </div>
+
+  <!-- BUYER VIEW -->
+  <div id="view-buyer">
+    <div class="tabs">
+      <button class="tab active" id="btab-catalog" onclick="setBuyerTab('catalog')">Товары дня</button>
+      <button class="tab" id="btab-orders" onclick="setBuyerTab('orders')">Мои заказы</button>
+    </div>
+
+    <div id="buyer-catalog">
+      <div class="searchrow"><input id="searchInput" placeholder="Искать товар..." oninput="renderCatalog()"></div>
+      <div class="chips" id="chips"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div id="buyer-orders" style="display:none;"></div>
+  </div>
+
+  <!-- SELLER VIEW -->
+  <div id="view-seller" style="display:none;"></div>
+
+  <!-- OPERATOR VIEW -->
+  <div id="view-operator" style="display:none;"></div>
+</div>
+
+<button class="float-cart" id="floatCart" style="display:none;" onclick="openCheckout()">
+  Перейти к оформлению <b id="floatTotal">0 ₽</b>
+</button>
+
+<div id="modalRoot"></div>
+
+<script>
+const CATEGORIES = ["Овощи и фрукты","Мясо и птица","Молочка","Хлеб и выпечка","Специи и бакалея","Разное"];
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC3fkJ9-1cKDoxfbFiQxeE8od_5z0x8bM8",
+  authDomain: "dahbed-market.firebaseapp.com",
+  projectId: "dahbed-market",
+  storageBucket: "dahbed-market.firebasestorage.app",
+  messagingSenderId: "434348078121",
+  appId: "1:434348078121:web:9687c384b683d1b34c1838",
+  measurementId: "G-F8DYHHTHKQ"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const sellersCol = db.collection("sellers");
+const productsCol = db.collection("products");
+const ordersCol = db.collection("orders");
+
+let sellers = [];
+let products = [];
+let orders = [];
+let myOrderIds = JSON.parse(localStorage.getItem("dahbed_my_orders") || "[]");
+let currentSeller = null;
+let cart = {};
+let activeCategory = "Все";
+let currentRole = "buyer";
+let seededCheckDone = false;
+
+function uid(prefix){ return prefix + "-" + Math.random().toString(36).slice(2,8); }
+function money(n){ return n.toLocaleString("ru-RU") + " ₽"; }
+function toast(msg){
+  const t=document.createElement("div"); t.className="toast"; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),2200);
+}
+
+// ---------- LIVE FIRESTORE SYNC ----------
+sellersCol.onSnapshot(snap=>{
+  sellers = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  maybeSeedDemo();
+  if(currentSeller){
+    const fresh = sellers.find(s=>s.id===currentSeller.id);
+    if(fresh) currentSeller = fresh;
+  }
+  if(currentRole==="seller") renderSellerView();
+}, err=>console.error("sellers listener error", err));
+
+productsCol.onSnapshot(snap=>{
+  products = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  if(currentRole==="buyer") renderCatalog();
+  if(currentRole==="seller") renderSellerView();
+}, err=>console.error("products listener error", err));
+
+ordersCol.onSnapshot(snap=>{
+  orders = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  if(currentRole==="buyer") renderMyOrders();
+  if(currentRole==="seller") renderSellerView();
+  if(currentRole==="operator") renderOperatorView();
+}, err=>console.error("orders listener error", err));
+
+async function maybeSeedDemo(){
+  if(seededCheckDone) return;
+  seededCheckDone = true;
+  const snap = await sellersCol.limit(1).get();
+  if(!snap.empty) return;
+  const s1 = await sellersCol.add({name:"Азиз", shopName:"Овощи у Азиза", password:"1234", createdAt:Date.now()});
+  const s2 = await sellersCol.add({name:"Фарход", shopName:"Мясная лавка Фарход", password:"1234", createdAt:Date.now()});
+  await productsCol.add({sellerId:s1.id, shopName:"Овощи у Азиза", name:"Яблоки", category:"Овощи и фрукты", price:180, unit:"кг", stock:40, icon:"🍎"});
+  await productsCol.add({sellerId:s1.id, shopName:"Овощи у Азиза", name:"Помидоры", category:"Овощи и фрукты", price:220, unit:"кг", stock:25, icon:"🍅"});
+  await productsCol.add({sellerId:s2.id, shopName:"Мясная лавка Фарход", name:"Курица", category:"Мясо и птица", price:320, unit:"кг", stock:15, icon:"🍗"});
+  await productsCol.add({sellerId:s2.id, shopName:"Мясная лавка Фарход", name:"Сыр домашний", category:"Молочка", price:450, unit:"кг", stock:8, icon:"🧀"});
+}
+
+// ---------- ROLE SWITCH ----------
+function setRole(r){
+  currentRole = r;
+  document.getElementById("role-buyer").classList.toggle("active", r==="buyer");
+  document.getElementById("role-seller").classList.toggle("active", r==="seller");
+  document.getElementById("role-operator").classList.toggle("active", r==="operator");
+  document.getElementById("view-buyer").style.display = r==="buyer" ? "block":"none";
+  document.getElementById("view-seller").style.display = r==="seller" ? "block":"none";
+  document.getElementById("view-operator").style.display = r==="operator" ? "block":"none";
+  document.getElementById("cartBtn").style.display = r==="buyer" ? "inline-flex":"none";
+  document.getElementById("floatCart").style.display = (r==="buyer" && cartCount()>0) ? "flex":"none";
+  if(r==="seller"){
+    const sid = localStorage.getItem("dahbed_seller_session");
+    if(sid && !currentSeller) currentSeller = sellers.find(s=>s.id===sid) || null;
+    renderSellerView();
+  }
+  if(r==="operator") renderOperatorView();
+  if(r==="buyer") { renderCatalog(); renderMyOrders(); }
+}
+
+function setBuyerTab(t){
+  document.getElementById("btab-catalog").classList.toggle("active", t==="catalog");
+  document.getElementById("btab-orders").classList.toggle("active", t==="orders");
+  document.getElementById("buyer-catalog").style.display = t==="catalog" ? "block":"none";
+  document.getElementById("buyer-orders").style.display = t==="orders" ? "block":"none";
+  if(t==="orders") renderMyOrders();
+}
+
+// ---------- BUYER: CATALOG ----------
+function renderChips(){
+  const chips = document.getElementById("chips");
+  const all = ["Все", ...CATEGORIES];
+  chips.innerHTML = all.map(c=>`<button class="chip ${c===activeCategory?'active':''}" onclick="pickCategory('${c}')">${c}</button>`).join("");
+}
+function pickCategory(c){ activeCategory=c; renderChips(); renderCatalog(); }
+
+function renderCatalog(){
+  renderChips();
+  const q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+  const grid = document.getElementById("grid");
+  let list = products.filter(p=>p.stock>0 || cart[p.id]);
+  if(activeCategory!=="Все") list = list.filter(p=>p.category===activeCategory);
+  if(q) list = list.filter(p=>p.name.toLowerCase().includes(q));
+
+  if(list.length===0){
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1;"><div>🧺</div>Пока нет товаров по вашему запросу</div>`;
+    return;
+  }
+  grid.innerHTML = list.map(p=>{
+    const inCart = cart[p.id] || 0;
+    const low = p.stock<=10;
+    return `<div class="card">
+      <div class="card-img">${p.icon}<span class="stock-tag ${low?'low':''}">${p.stock} ${p.unit} в наличии</span></div>
+      <div class="card-body">
+        <div class="card-cat">${p.category}</div>
+        <div class="card-shop">🧺 ${p.shopName}</div>
+        <div class="card-title">${p.name}</div>
+        <div class="card-price">${p.price} ₽ <span>/ ${p.unit}</span></div>
+        ${inCart>0 ? `
+          <div class="qtyrow">
+            <button onclick="changeCart('${p.id}',-1)">−</button>
+            <b>${inCart}</b>
+            <button onclick="changeCart('${p.id}',1)" ${inCart>=p.stock?'disabled':''}>+</button>
+          </div>` : `<button class="addbtn" onclick="changeCart('${p.id}',1)" ${p.stock<=0?'disabled':''}>${p.stock<=0?'Нет в наличии':'В корзину'}</button>`}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
+function cartTotal(){
+  return Object.entries(cart).reduce((sum,[pid,qty])=>{
+    const p = products.find(x=>x.id===pid);
+    return sum + (p ? p.price*qty : 0);
+  },0);
+}
+function changeCart(pid, delta){
+  const p = products.find(x=>x.id===pid);
+  if(!p) return;
+  const cur = cart[pid] || 0;
+  let next = cur + delta;
+  if(next < 0) next = 0;
+  if(next > p.stock) next = p.stock;
+  if(next === 0) delete cart[pid]; else cart[pid] = next;
+  updateCartUI();
+  renderCatalog();
+}
+function updateCartUI(){
+  const c = cartCount();
+  document.getElementById("cartBadge").textContent = c;
+  document.getElementById("floatCart").style.display = (currentRole==="buyer" && c>0) ? "flex":"none";
+  document.getElementById("floatTotal").textContent = money(cartTotal());
+}
+
+function openCart(){
+  const items = Object.entries(cart).map(([pid,qty])=>{
+    const p = products.find(x=>x.id===pid);
+    return p ? {p,qty} : null;
+  }).filter(Boolean);
+  const rows = items.length ? items.map(({p,qty})=>`
+    <div class="cartrow">
+      <div class="ic">${p.icon}</div>
+      <div class="info"><div class="n">${p.name}</div><div class="p">${p.price} ₽ × ${qty}</div></div>
+      <div class="qtyrow" style="width:96px;">
+        <button onclick="changeCart('${p.id}',-1);openCart();">−</button>
+        <b>${qty}</b>
+        <button onclick="changeCart('${p.id}',1);openCart();" ${qty>=p.stock?'disabled':''}>+</button>
+      </div>
+    </div>`).join("") : `<div class="empty"><div>🛒</div>Корзина пуста</div>`;
+
+  document.getElementById("modalRoot").innerHTML = `
+    <div class="modal-bg" onclick="if(event.target===this) closeModal()">
+      <div class="modal">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <h2>Корзина</h2>
+        ${rows}
+        ${items.length ? `<div class="totalrow"><span>Итого</span><span>${money(cartTotal())}</span></div>
+        <button class="btn" style="width:100%;margin-top:14px;" onclick="openCheckout()">Оформить заказ</button>` : ""}
+      </div>
+    </div>`;
+}
+
+function openCheckout(){
+  if(cartCount()===0){ toast("Корзина пуста"); return; }
+  document.getElementById("modalRoot").innerHTML = `
+    <div class="modal-bg" onclick="if(event.target===this) closeModal()">
+      <div class="modal">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <h2>Оформление заказа</h2>
+        <div class="formrow"><label>Ваше имя</label><input id="ckName" placeholder="Например, Ислом"></div>
+        <div class="formrow"><label>Телефон</label><input id="ckPhone" placeholder="+992 ..."></div>
+        <div class="formrow"><label>Время получения</label>
+          <select id="ckTime">
+            <option>18:00–18:30</option><option>18:30–19:00</option>
+            <option>19:00–19:30</option><option>19:30–20:00</option>
+          </select>
+        </div>
+        <div class="formrow"><label>Оплата</label>
+          <div class="radiorow">
+            <div class="radiobox"><input type="radio" checked disabled> Наличными на пункте выдачи</div>
+            <div class="radiobox disabled"><input type="radio" disabled> Онлайн (скоро)</div>
+          </div>
+        </div>
+        <div class="formrow"><label>Комментарий (необязательно)</label><textarea id="ckComment" rows="2"></textarea></div>
+        <div class="totalrow"><span>Итого</span><span>${money(cartTotal())}</span></div>
+        <button class="btn" style="width:100%;margin-top:14px;" onclick="submitOrder()">Подтвердить заказ</button>
+      </div>
+    </div>`;
+}
+
+async function submitOrder(){
+  const name = document.getElementById("ckName").value.trim();
+  const phone = document.getElementById("ckPhone").value.trim();
+  const time = document.getElementById("ckTime").value;
+  const comment = document.getElementById("ckComment").value.trim();
+  if(!name || !phone){ toast("Укажите имя и телефон"); return; }
+
+  const items = Object.entries(cart).map(([pid,qty])=>{
+    const p = products.find(x=>x.id===pid);
+    return {productId:pid, sellerId:p.sellerId, shopName:p.shopName, name:p.name, price:p.price, unit:p.unit, qty};
+  });
+  const total = cartTotal();
+  const pickupTime = time;
+
+  try{
+    const batch = db.batch();
+    items.forEach(it=>{
+      const ref = productsCol.doc(it.productId);
+      batch.update(ref, {stock: firebase.firestore.FieldValue.increment(-it.qty)});
+    });
+    await batch.commit();
+
+    const orderRef = await ordersCol.add({
+      code: "ORD-" + Math.random().toString(36).slice(2,8).toUpperCase(),
+      buyerName:name, buyerPhone:phone, pickupTime, comment,
+      items, total, status:"new", createdAt: Date.now()
+    });
+
+    myOrderIds.push(orderRef.id);
+    localStorage.setItem("dahbed_my_orders", JSON.stringify(myOrderIds));
+
+    cart = {};
+    updateCartUI();
+
+    document.getElementById("modalRoot").innerHTML = `
+      <div class="modal-bg" onclick="if(event.target===this) closeModal()">
+        <div class="modal">
+          <button class="modal-close" onclick="closeModal()">✕</button>
+          <h2>Заказ оформлен 🎉</h2>
+          <div class="success-steps">
+            <div class="success-step"><div class="n">1</div>Мы соберём ваш заказ у продавцов на рынке</div>
+            <div class="success-step"><div class="n">2</div>Привезём его на пункт выдачи в Мескинабады к ${pickupTime}</div>
+            <div class="success-step"><div class="n">3</div>Вы заберёте заказ и оплатите наличными на месте</div>
+          </div>
+          <button class="btn" style="width:100%;margin-top:16px;" onclick="closeModal(); setBuyerTab('orders');">Мои заказы</button>
+        </div>
+      </div>`;
+    renderCatalog();
+  }catch(e){
+    console.error(e);
+    toast("Не удалось оформить заказ, попробуйте ещё раз");
+  }
+}
+
+function closeModal(){ document.getElementById("modalRoot").innerHTML=""; }
+
+function renderMyOrders(){
+  const box = document.getElementById("buyer-orders");
+  const mine = orders.filter(o=>myOrderIds.includes(o.id)).sort((a,b)=>b.createdAt-a.createdAt);
+  if(mine.length===0){
+    box.innerHTML = `<div class="empty"><div>📦</div>Пока нет заказов</div>`;
+    return;
+  }
+  box.innerHTML = mine.map(o=>`
+    <div class="ocard">
+      <div class="ocard-top">
+        <div><div class="ocard-id">${o.code||o.id}</div><div class="ocard-meta">Получение: ${o.pickupTime} · Мескинабады</div></div>
+        <span class="badge ${o.status==='issued'?'issued':'new'}">${o.status==='issued'?'Выдан ✅':'В обработке'}</span>
+      </div>
+      ${o.items.map(it=>`<div class="oitem"><span>${it.name} × ${it.qty}</span><span>${money(it.price*it.qty)}</span></div>`).join("")}
+      <div class="ototal"><span>Итого</span><span>${money(o.total)}</span></div>
+    </div>`).join("");
+}
+
+// ---------- SELLER VIEW ----------
+function renderSellerView(){
+  const box = document.getElementById("view-seller");
+  if(!currentSeller){
+    box.innerHTML = `
+      <div class="panel" style="max-width:420px;margin:0 auto;">
+        <h3 id="sellerFormTitle">Вход для продавца</h3>
+        <div id="sellerLoginForm">
+          <div class="formrow"><label>Точка на рынке</label><input id="lgShop" placeholder="Например, Овощи у Азиза"></div>
+          <div class="formrow"><label>Пароль</label><input id="lgPass" type="password" placeholder="••••"></div>
+          <button class="btn" style="width:100%;" onclick="doLogin()">Войти</button>
+          <div class="switchline">Ещё нет точки? <a onclick="showSellerRegister()">Зарегистрироваться</a></div>
+        </div>
+        <div id="sellerRegisterForm" style="display:none;">
+          <div class="formrow"><label>Ваше имя</label><input id="rgName" placeholder="Например, Азиз"></div>
+          <div class="formrow"><label>Название точки на рынке</label><input id="rgShop" placeholder="Например, Овощи у Азиза"></div>
+          <div class="formrow"><label>Пароль</label><input id="rgPass" type="password" placeholder="••••"></div>
+          <button class="btn" style="width:100%;" onclick="doRegister()">Зарегистрироваться</button>
+          <div class="switchline">Уже есть точка? <a onclick="showSellerLogin()">Войти</a></div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const myProducts = products.filter(p=>p.sellerId===currentSeller.id);
+  const orderedToday = pid => orders.reduce((sum,o)=> sum + o.items.filter(it=>it.productId===pid).reduce((s,it)=>s+it.qty,0), 0);
+
+  box.innerHTML = `
+    <div class="panel">
+      <h3>Точка: ${currentSeller.shopName}</h3>
+      <div class="switchline" style="text-align:left;margin-top:-8px;margin-bottom:14px;">Продавец: ${currentSeller.name} · <a onclick="doLogout()">Выйти</a></div>
+      <h3 style="font-size:14px;">Добавить товар</h3>
+      <div class="formgrid">
+        <div class="formrow"><label>Название</label><input id="npName" placeholder="Яблоки"></div>
+        <div class="formrow"><label>Категория</label>
+          <select id="npCat">${CATEGORIES.map(c=>`<option>${c}</option>`).join("")}</select>
+        </div>
+        <div class="formrow"><label>Цена (₽)</label><input id="npPrice" type="number" min="0"></div>
+        <div class="formrow"><label>Ед. измерения</label><input id="npUnit" placeholder="кг / шт / л"></div>
+        <div class="formrow"><label>Остаток</label><input id="npStock" type="number" min="0"></div>
+        <div class="formrow"><label>Иконка (эмодзи)</label><input id="npIcon" placeholder="🍎"></div>
+      </div>
+      <button class="btn" onclick="addProduct()">Добавить товар</button>
+    </div>
+
+    <div class="panel">
+      <h3>Мои товары</h3>
+      ${myProducts.length===0 ? `<div class="empty"><div>🧺</div>Вы ещё не добавили товары</div>` :
+        myProducts.map(p=>`
+          <div class="prow">
+            <div class="prow-ic">${p.icon}</div>
+            <div class="prow-info">
+              <div class="prow-title">${p.name}</div>
+              <div class="prow-sub">${p.category} · ${p.price} ₽ / ${p.unit}</div>
+            </div>
+            <div class="prow-stat">Остаток<b>${p.stock} ${p.unit}</b></div>
+            <div class="prow-stat">Заказано<b>${orderedToday(p.id)} ${p.unit}</b></div>
+            <div>
+              <input type="number" min="0" value="${p.stock}" style="width:64px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--line);font-family:inherit;" onchange="updateStock('${p.id}', this.value)">
+            </div>
+          </div>`).join("")}
+    </div>`;
+}
+
+function showSellerRegister(){
+  document.getElementById("sellerLoginForm").style.display="none";
+  document.getElementById("sellerRegisterForm").style.display="block";
+  document.getElementById("sellerFormTitle").textContent = "Регистрация продавца";
+}
+function showSellerLogin(){
+  document.getElementById("sellerRegisterForm").style.display="none";
+  document.getElementById("sellerLoginForm").style.display="block";
+  document.getElementById("sellerFormTitle").textContent = "Вход для продавца";
+}
+
+async function doRegister(){
+  const name = document.getElementById("rgName").value.trim();
+  const shopName = document.getElementById("rgShop").value.trim();
+  const password = document.getElementById("rgPass").value;
+  if(!name || !shopName || !password){ toast("Заполните все поля"); return; }
+  if(sellers.some(s=>s.shopName.toLowerCase()===shopName.toLowerCase())){ toast("Точка с таким названием уже есть"); return; }
+  try{
+    const ref = await sellersCol.add({name, shopName, password, createdAt:Date.now()});
+    currentSeller = {id:ref.id, name, shopName, password, createdAt:Date.now()};
+    localStorage.setItem("dahbed_seller_session", ref.id);
+    toast("Добро пожаловать!");
+    renderSellerView();
+  }catch(e){
+    console.error(e);
+    toast("Не удалось зарегистрироваться, попробуйте ещё раз");
+  }
+}
+
+function doLogin(){
+  const shopName = document.getElementById("lgShop").value.trim();
+  const password = document.getElementById("lgPass").value;
+  const s = sellers.find(x=>x.shopName.toLowerCase()===shopName.toLowerCase() && x.password===password);
+  if(!s){ toast("Неверная точка или пароль"); return; }
+  currentSeller = s;
+  localStorage.setItem("dahbed_seller_session", s.id);
+  renderSellerView();
+}
+
+function doLogout(){
+  currentSeller = null;
+  localStorage.removeItem("dahbed_seller_session");
+  renderSellerView();
+}
+
+async function addProduct(){
+  const name = document.getElementById("npName").value.trim();
+  const category = document.getElementById("npCat").value;
+  const price = parseFloat(document.getElementById("npPrice").value);
+  const unit = document.getElementById("npUnit").value.trim() || "шт";
+  const stock = parseInt(document.getElementById("npStock").value);
+  const icon = document.getElementById("npIcon").value.trim() || "🧺";
+  if(!name || isNaN(price) || isNaN(stock)){ toast("Заполните название, цену и остаток"); return; }
+  try{
+    await productsCol.add({sellerId:currentSeller.id, shopName:currentSeller.shopName, name, category, price, unit, stock, icon});
+    toast("Товар добавлен");
+    renderSellerView();
+  }catch(e){
+    console.error(e);
+    toast("Не удалось сохранить товар, попробуйте ещё раз");
+  }
+}
+
+async function updateStock(pid, val){
+  const newStock = Math.max(0, parseInt(val)||0);
+  try{
+    await productsCol.doc(pid).update({stock:newStock});
+    toast("Остаток обновлён");
+  }catch(e){
+    console.error(e);
+    toast("Не удалось обновить остаток");
+  }
+}
+
+// ---------- OPERATOR VIEW ----------
+function renderOperatorView(){
+  const box = document.getElementById("view-operator");
+  const active = orders.filter(o=>o.status!=="issued").sort((a,b)=>a.createdAt-b.createdAt);
+  const done = orders.filter(o=>o.status==="issued").sort((a,b)=>b.createdAt-a.createdAt);
+
+  const routeMap = {};
+  active.forEach(o=>o.items.forEach(it=>{
+    const key = it.shopName + "|" + it.name;
+    if(!routeMap[key]) routeMap[key] = {shopName:it.shopName, name:it.name, unit:it.unit, qty:0};
+    routeMap[key].qty += it.qty;
+  }));
+  const routeList = Object.values(routeMap);
+
+  box.innerHTML = `
+    <div class="panel">
+      <h3>Маршрут сбора на сегодня</h3>
+      ${routeList.length===0 ? `<div class="empty"><div>✅</div>Нечего собирать — активных заказов нет</div>` :
+        routeList.map(r=>`
+          <div class="prow">
+            <div class="prow-ic">🧺</div>
+            <div class="prow-info">
+              <div class="prow-title">${r.name}</div>
+              <div class="prow-sub">${r.shopName}</div>
+            </div>
+            <div class="prow-stat">Собрать<b>${r.qty} ${r.unit}</b></div>
+          </div>`).join("")}
+    </div>
+
+    <div class="panel">
+      <h3>Заказы в работе (${active.length})</h3>
+      ${active.length===0 ? `<div class="empty"><div>📦</div>Нет активных заказов</div>` :
+        active.map(o=>`
+          <div class="ocard">
+            <div class="ocard-top">
+              <div>
+                <div class="ocard-id">${o.code||o.id} — ${o.buyerName}</div>
+                <div class="ocard-meta">📞 ${o.buyerPhone} · ⏰ ${o.pickupTime}</div>
+              </div>
+              <span class="badge new">Новый</span>
+            </div>
+            ${o.items.map(it=>`<div class="oitem"><span>${it.name} × ${it.qty} (${it.shopName})</span><span>${money(it.price*it.qty)}</span></div>`).join("")}
+            <div class="ototal"><span>Итого</span><span>${money(o.total)}</span></div>
+            ${o.comment ? `<div class="ocard-meta" style="margin-top:6px;">💬 ${o.comment}</div>` : ""}
+            <button class="btn small" style="margin-top:10px;" onclick="markIssued('${o.id}')">Отметить как выдан</button>
+          </div>`).join("")}
+    </div>
+
+    <div class="panel">
+      <h3>Выданные заказы (${done.length})</h3>
+      ${done.length===0 ? `<div class="empty"><div>🕒</div>Пока ничего не выдано</div>` :
+        done.map(o=>`
+          <div class="ocard">
+            <div class="ocard-top">
+              <div><div class="ocard-id">${o.code||o.id} — ${o.buyerName}</div><div class="ocard-meta">⏰ ${o.pickupTime}</div></div>
+              <span class="badge issued">Выдан ✅</span>
+            </div>
+          </div>`).join("")}
+    </div>`;
+}
+
+async function markIssued(orderId){
+  try{
+    await ordersCol.doc(orderId).update({status:"issued"});
+    toast("Заказ отмечен как выданный");
+  }catch(e){
+    console.error(e);
+    toast("Не удалось обновить статус заказа");
+  }
+}
+
+// ---------- INIT ----------
+renderChips();
+renderCatalog();
+updateCartUI();
+</script>
+</body>
+</html>
